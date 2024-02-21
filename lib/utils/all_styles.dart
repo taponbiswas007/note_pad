@@ -10,9 +10,28 @@ class AllStyle{
     fontSize: 20.0,
     fontWeight: FontWeight.bold
   );
-  static final bottomnavaritemTextstyle = TextStyle(
+  static final notetitleTextstyle = TextStyle(
+    fontFamily: GoogleFonts.poppins().fontFamily,
+    fontSize: 18.0,
+    fontWeight: FontWeight.bold,
+    color: AllColors.bluecolor
+  );
+  static final notedescriptionTextstyle = TextStyle(
     fontFamily: GoogleFonts.poppins().fontFamily,
     fontSize: 15.0,
-    fontWeight: FontWeight.bold
+    fontWeight: FontWeight.bold,
+    color: AllColors.blackcolor
+  );
+  static final dateTextstyle = TextStyle(
+    fontFamily: GoogleFonts.poppins().fontFamily,
+    fontSize: 12.0,
+    fontWeight: FontWeight.bold,
+    color: AllColors.graycolor
+  );
+  static final emptyTextstyle = TextStyle(
+    fontFamily: GoogleFonts.poppins().fontFamily,
+    fontSize: 30.0,
+    fontWeight: FontWeight.bold,
+    color: AllColors.graycolor
   );
 }
