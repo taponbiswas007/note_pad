@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:note_pad/routes/routes.dart';
 import 'package:note_pad/view/bottom_navbar.dart';
 
 void main() {
@@ -13,7 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: BottomNavBar(),
+      getPages: getpages,
+      initialRoute: bottomNavigationBar,
     );
   }
 }
