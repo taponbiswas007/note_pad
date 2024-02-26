@@ -38,7 +38,7 @@ class NoteDetailspage extends StatelessWidget {
           InkWell(
             onTap: () {
               noteController.addfavoriteItem(NoteModel(title, description, create_at));
-              Fluttertoast.showToast(msg: "favorite note added");
+             
             },
             child: Padding(
               padding: const EdgeInsets.only(right: 20.0),

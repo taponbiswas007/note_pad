@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:intl/intl.dart';
 import 'package:note_pad/controller/note_controller.dart';
 import 'package:note_pad/models/note_model.dart';
 import 'package:note_pad/routes/routes.dart';
@@ -8,9 +11,9 @@ import 'package:note_pad/utils/all_icons.dart';
 import 'package:note_pad/utils/all_styles.dart';
 
 class Notepage extends StatelessWidget {
+  final Box box=Hive.box('notes');
   NoteController noteController = Get.put(NoteController());
-
-   TextEditingController titleclt = TextEditingController();
+  TextEditingController titleclt = TextEditingController();
   TextEditingController descriptionclt = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -39,7 +42,7 @@ class Notepage extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: GetBuilder<NoteController>(builder: (_) {
           return
-          noteController.notes.isEmpty? Container(
+          box.keys.length==0 ? Container(
             width: Get.width,
             child: Column(
                mainAxisAlignment:MainAxisAlignment.center,
@@ -50,81 +53,87 @@ class Notepage extends StatelessWidget {
               Text("Empty Notes",
                style: AllStyle.emptyTextstyle,)
             ],),
-          ) :ListView.builder(
-              itemCount: noteController.notes.length,
-              itemBuilder: (context, index) {
-                NoteModel note= noteController.notes[index];
-                return InkWell(
-                  onTap: () {
-                    Get.toNamed(noteDetailspage,arguments: {
-                      "title":note.title, "description":note.description, "date":note.createAt
-                    });
-                  },
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          )
+           :ValueListenableBuilder(
+             valueListenable: box.listenable(),
+             builder: (context, box, child) {
+               return ListView.builder(
+                  itemCount: box.keys.length,
+                  itemBuilder: (context, index) {
+                    NoteModel note= box.getAt(index);
+                    return InkWell(
+                      onTap: () {
+                        Get.toNamed(noteDetailspage,arguments: {
+                          "title":note.title, "description":note.description, "date":note.createAt
+                        });
+                      },
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(note.title,style: AllStyle.notetitleTextstyle,),
-                              Container(
-                                width: 80.0,
-                                child: Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: (){
-                                        noteController.deleteNote(index);
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          color: AllColors.graycolor,
-                                          
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(4.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(note.title,style: AllStyle.notetitleTextstyle,),
+                                  Container(
+                                    width: 80.0,
+                                    child: Row(
+                                      children: [
+                                        InkWell(
+                                          onTap: (){
+                                            noteController.deleteNote(index);
+                                          },
                                           child: Container(
-                                            child: AllIcons.deletIcon,
-                                          )
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(20.0),
+                                              color: AllColors.graycolor,
+                                              
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(4.0),
+                                              child: Container(
+                                                child: AllIcons.deletIcon,
+                                              )
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                        SizedBox(width: 10.0,),
+                                        InkWell(
+                                          onTap: () {
+                                            openDialog(context,index);
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(20.0),
+                                              color: AllColors.graycolor,
+                                              
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(4.0),
+                                              child: AllIcons.editIcon,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(width: 10.0,),
-                                    InkWell(
-                                      onTap: () {
-                                        openDialog(context,index);
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(20.0),
-                                          color: AllColors.graycolor,
-                                          
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(4.0),
-                                          child: AllIcons.editIcon,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
+                                  )
+                                ],
+                              ),
+                              SizedBox(height: 8.0,),
+                              Text(note.description,style: AllStyle.notedescriptionTextstyle,),
+                              SizedBox(height: 5.0,),
+                              Text(note.createAt,style: AllStyle.dateTextstyle,)
                             ],
                           ),
-                          SizedBox(height: 8.0,),
-                          Text(note.description,style: AllStyle.notedescriptionTextstyle,),
-                          SizedBox(height: 5.0,),
-                          Text(note.createAt,style: AllStyle.dateTextstyle,)
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              });
+                    );
+                  });
+             }
+           );
         }),
       ),
     );
@@ -164,8 +173,10 @@ class Notepage extends StatelessWidget {
                       ),)),
                   ElevatedButton(
                       onPressed: () {
+                         var outputFormat = DateFormat('dd/MM/yyyy hh:mm a');
+                        String create_at= outputFormat.format(DateTime.now());
                         noteController.updateNote(NoteModel(titleclt.text,
-                            descriptionclt.text, DateTime.now().toString()),index);
+                            descriptionclt.text, create_at),index);
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: AllColors.bluecolor),

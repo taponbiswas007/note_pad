@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:note_pad/controller/note_controller.dart';
 import 'package:note_pad/models/note_model.dart';
 import 'package:note_pad/utils/all_colors.dart';
@@ -7,6 +8,7 @@ import 'package:note_pad/utils/all_icons.dart';
 import 'package:note_pad/utils/all_styles.dart';
 import 'package:note_pad/view/favorites_page.dart';
 import 'package:note_pad/view/home_page.dart';
+
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
@@ -90,8 +92,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       ),)),
                   ElevatedButton(
                       onPressed: () {
+                        var outputFormat = DateFormat('dd/MM/yyyy hh:mm a');
+                        String create_at= outputFormat.format(DateTime.now());
                         noteController.addnote(NoteModel(titleclt.text,
-                            descriptionclt.text, DateTime.now().toString()));
+                            descriptionclt.text, create_at));
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: AllColors.bluecolor),
